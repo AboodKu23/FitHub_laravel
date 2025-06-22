@@ -10,6 +10,8 @@ use App\Http\Controllers\Trainee\TrainersIntegrationController;
 use App\Http\Controllers\Trainer\RegisterTrainerController;
 use App\Http\Controllers\Trainer\TraineeIntegrationController;
 use App\Http\Controllers\Trainer\TrainerSubscriptionController;
+use App\Http\Controllers\Trainer\TrainingPlanController;
+use App\Http\Controllers\Trainer\TrainingPlanExerciseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -76,6 +78,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/get-active-subscriptions', [TrainerSubscriptionController::class, 'getActiveSubscriptions']);
             Route::get('/get-subscriptions/{id}', [TrainerSubscriptionController::class, 'getSubscription']);
             Route::get('/get-trainee/{id}', [TraineeIntegrationController::class, 'getTraineeInfo']);
+        });
+
+        Route::prefix('Plans')->group(function () {
+            Route::post('/create-plan', [TrainingPlanController::class, 'createNewTrainingPlan']); //Done
+            Route::post('delete-plan/{id}', [TrainingPlanController::class, 'deleteTrainingPlan']); //Done
+            Route::get('/get-all-plans', [TrainingPlanController::class, 'getAllTrainingPlans']); //Done
+            Route::get('/get-plan/{id}', [TrainingPlanController::class, 'getTrainingPlan']); //Done
+
+            Route::prefix('Plan')->group(function () {
+                Route::post('/save-plan/{id}', [TrainingPlanExerciseController::class, 'saveTrainingPlan']); //Done
+                Route::post('/save-plan-exercise/{id}', [TrainingPlanExerciseController::class, 'addExerciseDetails']); //Done
+                Route::post('/save-plan-exercise-order/{id}', [TrainingPlanExerciseController::class, 'updateExerciseDayOrder']); //Done
+                Route::get('/plan-exercises/{id}', [TrainingPlanExerciseController::class, 'getPlanExercises']); //Done
+                Route::get('/plan-exercise/{id}', [TrainingPlanExerciseController::class, 'getPlanExerciseById']); //Done
+                Route::get('/day-exercises/{id}', [TrainingPlanExerciseController::class, 'getDayExercises']); //Done
+            });
         });
 
 

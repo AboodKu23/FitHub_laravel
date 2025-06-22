@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('experience_years')->default(0);
             $table->integer('subscriber_count')->default(0);
             $table->decimal('rating', 3, 2)->default(0);
-            $table->decimal('subscription_price',6,2);
+            $table->decimal('subscription_price',6,2)->nullable();
             $table->decimal('rating_weight_subscribers', 5, 2)->default(0.30);
             $table->decimal('rating_weight_certificates', 5, 2)->default(0.30);
             $table->decimal('rating_weight_trainee_feedback', 5, 2)->default(0.40);

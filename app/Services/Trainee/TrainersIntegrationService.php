@@ -43,7 +43,7 @@ class TrainersIntegrationService
     public function getTrainer(int $trainerId): array
     {
         try {
-            $trainer = $this->trainerRepository->getTrainerById($trainerId);
+            $trainer = $this->trainerRepository->getTrainerByIdWithCertificate($trainerId);
 
             return [
                 'success' => true,

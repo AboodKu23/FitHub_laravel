@@ -12,14 +12,16 @@ class TrainingPlanExerciseRepository
         return TrainingPlanExercise::create($data);
     }
 
-    public function saveDayExercise(int $planId, int $dayNumber, array $data): void
+    public function saveExercise(int $planId, array $days): void
     {
-        TrainingPlanExercise::where('training_plan_id', $planId)
-            ->where('dayNumber', $dayNumber)
-            ->delete();
+        foreach ($days as $day) {
+            $dayNumber = $day['dayNumber'];
 
-        foreach ($data as $exercise) {
-            if (!$this->existsInDay($planId, $dayNumber, $exercise['exercise_id'])) {
+            TrainingPlanExercise::where('training_plan_id', $planId)
+                ->where('dayNumber', $dayNumber)
+                ->delete();
+
+            foreach ($day['exercises'] as $exercise) {
                 $this->create([
                     'training_plan_id' => $planId,
                     'exercise_id' => $exercise['exercise_id'],
@@ -38,10 +40,19 @@ class TrainingPlanExerciseRepository
         'duration' => $data['duration'] ?? null,
         'reset_duration' => $data['reset_duration'] ?? null,
         'notes' => $data['notes'] ?? null,
-        'orderInDay' => $data['orderInDay'] ?? null
             ]
         );
 
+    }
+
+    public function updateExercisesOrderInDay(int $planId, int $dayNumber, array $exercises): void
+    {
+        foreach ($exercises as $exercise) {
+            TrainingPlanExercise::where('id', $exercise['id'])
+                ->where('training_plan_id', $planId)
+                ->where('dayNumber', $dayNumber)
+                ->update(['orderInDay' => $exercise['orderInDay']]);
+        }
     }
 
     public function update(TrainingPlanExercise $trainingPlanExercise, array $data): bool
@@ -60,12 +71,14 @@ class TrainingPlanExerciseRepository
 
     public function getPlanExerciseById(int $trainingPlanExerciseId): TrainingPlanExercise
     {
-        return TrainingPlanExercise::where('id', $trainingPlanExerciseId)->findOrFail();
+        return TrainingPlanExercise::with('exercise')
+            ->where('id', $trainingPlanExerciseId)
+            ->first();
     }
 
-    public function getExerciseByDayNumber(int $planExerciseId ,int $dayNumber): Collection
+    public function getExerciseByDayNumber(int $planId ,int $dayNumber): Collection
     {
-        return TrainingPlanExercise::where('id', $planExerciseId)
+        return TrainingPlanExercise::where('training_plan_id', $planId)
             ->where('dayNumber', $dayNumber)
             ->with('exercise')
             ->get();

@@ -22,7 +22,7 @@ class TraineeSubscriptionServices
 
     public function sendSubscriptionRequest(int $traineeId , int $trainerId ): array
     {
-        $trainer = $this->trainerRepository->getTrainerById($trainerId);
+        $trainer = $this->trainerRepository->getTrainerByIdWithCertificate($trainerId);
         $trainee = Trainee::where('id', $traineeId)->firstOrFail();
 
         if (!$trainer) {

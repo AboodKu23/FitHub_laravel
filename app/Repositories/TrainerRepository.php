@@ -29,12 +29,15 @@ class TrainerRepository
             ->get();
     }
 
-    public function getTrainerById(int $trainerId) : ?Trainer
+    public function getTrainerByIdWithCertificate(int $trainerId) : ?Trainer
     {
         return Trainer::with('verifiedCertificates')
             ->with('user')
             ->find($trainerId);
     }
 
-
+    public function getTrainerById(int $trainerId) : ?Trainer
+    {
+        return Trainer::where('id', $trainerId)->first();
+    }
 }
