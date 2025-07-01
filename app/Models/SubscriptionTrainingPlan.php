@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SubscriptionTrainingPlan extends Model
 {
@@ -14,5 +15,8 @@ class SubscriptionTrainingPlan extends Model
         'notes'
     ];
 
-
+    public function trainingPlan(): BelongsTo
+    {
+        return $this->belongsTo(TrainingPlan::class, 'training_plan_id');
+    }
 }
