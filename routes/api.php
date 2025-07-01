@@ -3,10 +3,12 @@
 use App\Http\Controllers\Auth\AuthenticatedController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\RegisterStepOneController;
-use App\Http\Controllers\Exercises\ExercisesController;
+use App\Http\Controllers\Services\ExercisesController;
+use App\Http\Controllers\Services\PostController;
 use App\Http\Controllers\Trainee\RegisterTraineeController;
 use App\Http\Controllers\Trainee\TraineeSubscriptionController;
 use App\Http\Controllers\Trainee\TrainersIntegrationController;
+use App\Http\Controllers\Trainer\ManagePostController;
 use App\Http\Controllers\Trainer\RegisterTrainerController;
 use App\Http\Controllers\Trainer\TraineeIntegrationController;
 use App\Http\Controllers\Trainer\TrainerSubscriptionController;
@@ -96,6 +98,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
             });
         });
 
+        Route::prefix('Posts')->group(function () {
+            Route::post('/create-post', [ManagePostController::class, 'createPost']); //Done
+            Route::post('/{id}/delete-post', [ManagePostController::class, 'deleteTrainerPost']); //Done
+            Route::post('/{id}/update-post', [ManagePostController::class, 'UpdateTrainerPost']); //Done
+            Route::get('/get-trainer-posts', [ManagePostController::class, 'getTrainerPosts']); //Done
+        });
+    });
+});
 
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::prefix('Community')->group(function () {
+        Route::post('/{id}/like-post',[PostController::class,'likePost']); //Done
+        Route::post('/{id}/unLike-post',[PostController::class,'unlikePost']); //Done
+        Route::post('/{id}/dislike-post',[PostController::class,'dislikePost']); //Done
+        Route::post('/{id}/unDislike-post',[PostController::class,'unDislikePost']); //Done
+        Route::get('/get-posts', [PostController::class,'getAllPosts']); //Done
     });
 });

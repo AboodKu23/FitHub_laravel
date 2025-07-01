@@ -17,7 +17,7 @@ class PostLikeRepository
         return $postLike->delete();
     }
 
-    public function getUserPostLikes(int $postId, int $userId): PostLike
+    public function getUserPostLikes(int $postId, int $userId): ?PostLike
     {
         return PostLike::where([
             'post_id' => $postId,
@@ -25,5 +25,26 @@ class PostLikeRepository
         ])->first();
     }
 
+    public function isPostLikedByUser(int $postId, int $userId): bool
+    {
+        return PostLike::where([
+            'post_id' => $postId,
+            'user_id' => $userId
+        ])->exists();
+    }
 
+    public function getPostLikes(int $postId): array
+    {
+        return PostLike::with('user:id,first_name,last_name,profile_image')
+            ->where('post_id', $postId)
+            ->get()
+            ->map(function ($like) {
+                return [
+                    'id' => $like->user->id,
+                    'name' => $like->user->first_name . ' ' . $like->user->last_name,
+                    'profile_image' => $like->user->profile_image
+                ];
+            })
+            ->toArray();
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Post;
 use App\Models\PostDislike;
 use App\Models\PostLike;
+use App\Models\Trainer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +26,11 @@ class PostRepository
     public function delete(Post $post): bool
     {
         return $post->delete();
+    }
+
+    public function getPostById(int $postId): Post
+    {
+        return Post::where('id', $postId)->firstOrFail();
     }
 
     public function getAllPosts(int $perPage = 10): LengthAwarePaginator
@@ -53,45 +59,38 @@ class PostRepository
             ->paginate($perPage);
     }
 
-//    public function toggleLike(Post $post, int $userId): array
-//    {
-//
-//
-//        if($like){
-//            $like->delete();
-//            $isLiked = false;
-//        }
-//        else{
-//            PostDislike::create([
-//                'post_id' => $post->id,
-//                'user_id' => $userId,
-//            ]);
-//            $isLiked = true;
-//            $post->post_likes_count	+= 1;
-//        }
-//        return [
-//            'isLiked' => $isLiked,
-//            'likes_count' => $post->likes()->count()
-//        ];
-//    }
+    public function isPostPublisher(Post $post, int $trainerId): bool
+    {
+        if ($post->publisher_id === $trainerId) {
+            return true;
+        }
+        return false;
+    }
 
-//    public function toggleDislike(Post $post, int $userId): array
-//    {
-//        $dislikes = PostDislike::where([
-//            'post_id' => $post->id,
-//            'user_id' => $userId,
-//        ])->first();
-//
-//        if($dislikes){
-//            $dislikes->delete();
-//            $isDisliked = false;
-//        }
-//        else{
-//            PostDislike::create([
-//                'post_id' => $post->id,
-//                'disli'
-//            ]);
-//        }
-//    }
+    public function getTrainerPosts(Trainer $trainer, int $perPage = 10): LengthAwarePaginator
+    {
+        return Post::with([
+            'publisher.user:id,first_name,last_name,profile_image',
+        ])->where('publisher_id', $trainer->id)
+            ->withCount([
+                'likes as likes_count',
+                'dislikes as dislikes_count',
+            ])->when(Auth::check(), function (Builder $builder) {
+                $userId = Auth::id();
+                $builder->addSelect([
+                    'is_liked' => PostLike::select(DB::raw('1'))
+                    ->whereColumn('post_id', 'posts.id')
+                    ->where('user_id', $userId)
+                    ->limit(1),
 
+                    'is_disliked' => DB::table('post_dislikes')
+                    ->select(DB::raw('1'))
+                    ->whereColumn('post_id', 'posts.id')
+                    ->where('user_id', $userId)
+                    ->limit(1),
+                ]);
+            })->select('posts.*')
+            ->latest()
+            ->paginate($perPage);
+    }
 }

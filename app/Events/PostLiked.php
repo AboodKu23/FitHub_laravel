@@ -2,6 +2,8 @@
 
 namespace App\Events;
 
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -10,16 +12,17 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class PostLiked
+class PostLiked implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public int $postId;
-    public int $likesCount;
-    public function __construct(int $postId, int $likesCount)
+    public Post $post;
+    public User $user;
+
+    public function __construct(Post $post, User $user)
     {
-        $this->postId = $postId;
-        $this->likesCount = $likesCount;
+        $this->post = $post;
+        $this->user = $user;
     }
 
     public function broadcastOn(): Channel
@@ -30,5 +33,18 @@ class PostLiked
     public function broadcastAs(): string
     {
         return 'post.liked';
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'post_id' => $this->post->id,
+            'user' => [
+                'id' => $this->user->id,
+                'name' => $this->user->first_name . ' ' . $this->user->last_name,
+                'profile_image' => $this->user->profile_image
+            ],
+            'likes_count' => $this->post->likes()->count(),
+        ];
     }
 }

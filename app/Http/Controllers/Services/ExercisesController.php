@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Exercises;
+namespace App\Http\Controllers\Services;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExercisesPageRequest;
-use App\Services\Exercises\ExerciseService;
+use App\Services\Exercise\ExerciseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

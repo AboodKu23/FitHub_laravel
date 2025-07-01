@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Exercises;
+namespace App\Services\Exercise;
 
 use App\Models\Exercise;
 use App\Repositories\ExerciseRepository;

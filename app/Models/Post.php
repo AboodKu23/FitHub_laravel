@@ -14,7 +14,7 @@ class Post extends Model
         'publisher_id',
         'title',
         'content',
-        'imageUrl',
+        'image',
         'post_likes_count',
         'post_dislikes_count',
         'published_at',
