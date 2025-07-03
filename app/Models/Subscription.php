@@ -39,6 +39,11 @@ class Subscription extends Model
 
     public function messages():HasMany
     {
-        return $this->hasMany(Message::class, 'subscription_id');
+        return $this->hasMany(Chat::class, 'subscription_id');
+    }
+
+    public function trainingPlan(): HasOne
+    {
+        return $this->hasOne(SubscriptionTrainingPlan::class, 'subscription_id');
     }
 }

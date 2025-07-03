@@ -70,12 +70,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function messagesSent(): HasMany
     {
-        return $this->hasMany(Message::class, 'sender_id');
+        return $this->hasMany(Chat::class, 'sender_id');
     }
 
     public function messagesReceived(): HasMany
     {
-        return $this->hasMany(Message::class, 'receiver_id');
+        return $this->hasMany(Chat::class, 'receiver_id');
     }
 
     public function hasVerifiedEmail() : bool

@@ -32,6 +32,15 @@ class SubscriptionRepository
             ->exists();
     }
 
+//    public function getActiveSubscriptionBetweenTrainerAndTrainer(int $traineeId, int $trainerId): ?Subscription
+//    {
+//        return Subscription::where('trainer_id', $trainerId)
+//            ->where('trainee_id', $traineeId)
+//            ->where('status', 'accepted')
+//            ->where('expire_date', '>=', now()->subDays(2))
+//            ->first();
+//    }
+
     public function getActiveSubscriptionsForTrainer(Trainer $trainer): Collection
     {
         return $trainer->subscriptions()

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SubscriptionTrainingPlan extends Model
 {
@@ -19,4 +20,15 @@ class SubscriptionTrainingPlan extends Model
     {
         return $this->belongsTo(TrainingPlan::class, 'training_plan_id');
     }
+
+    public function subscription(): BelongsTo
+    {
+        return $this->belongsTo(Subscription::class, 'subscription_id');
+    }
+
+    public function customizedExercises(): HasMany
+    {
+        return $this->hasMany(CustomizedTrainingExercise::class, 'subscription_plan_id');
+    }
+
 }
