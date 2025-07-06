@@ -4,6 +4,7 @@ namespace App\Services\Trainer;
 
 use App\Models\SubscriptionTrainingPlan;
 use App\Models\Trainer;
+use App\Repositories\ChatRepository;
 use App\Repositories\SubscriptionRepository;
 use App\Repositories\SubscriptionRequestRepository;
 use App\Repositories\TrainingPlanRepository;
@@ -14,12 +15,14 @@ class TrainerSubscriptionRequestService
     protected SubscriptionRequestRepository $subscriptionRequestRepository;
     protected SubscriptionRepository $subscriptionRepository;
     protected SubscriptionTrainingPlan  $subscriptionTrainingPlan;
+    protected ChatRepository $chatRepository;
 
-    public function __construct(SubscriptionRequestRepository $subscriptionRequestRepository, SubscriptionRepository $subscriptionRepository, SubscriptionTrainingPlan $subscriptionTrainingPlan)
+    public function __construct(SubscriptionRequestRepository $subscriptionRequestRepository, SubscriptionRepository $subscriptionRepository, SubscriptionTrainingPlan $subscriptionTrainingPlan, ChatRepository $chatRepository)
     {
         $this->subscriptionRequestRepository = $subscriptionRequestRepository;
         $this->subscriptionRepository = $subscriptionRepository;
         $this->subscriptionTrainingPlan = $subscriptionTrainingPlan;
+        $this->chatRepository = $chatRepository;
     }
 
     public function getActiveRequests(int $trainerId) : Collection
@@ -62,6 +65,8 @@ class TrainerSubscriptionRequestService
             'end_date' => $newSubscription->expire_date,
         ]);
 
+        $chat = $this->chatRepository->createChatForSubscription($newSubscription->id);
+
 //        $trainee->user->notify(new AcceptSubscriptionRequest($request));
 
         return [
@@ -69,7 +74,8 @@ class TrainerSubscriptionRequestService
             'message' => 'Request accepted',
             'data' => [
                 'subscription' => $newSubscription,
-                'plan' => $newPlan
+                'plan' => $newPlan,
+                'chat' => $chat
             ]
         ];
     }

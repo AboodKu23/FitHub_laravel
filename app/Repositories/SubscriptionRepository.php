@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Subscription;
+use App\Models\Trainee;
 use App\Models\Trainer;
 use Illuminate\Support\Collection;
 
@@ -27,8 +28,16 @@ class SubscriptionRepository
     {
         return Subscription::where('trainer_id', $trainerId)
             ->where('trainee_id', $traineeId)
-            ->where('status', 'accepted')
+            ->where('status', 'Active')
             ->where('expire_date', '>=', now()->subDays(2))
+            ->exists();
+    }
+
+    public function ifSubscriptionActive(int $subscriptionId): bool
+    {
+        return Subscription::where('id', $subscriptionId)
+            ->where('status', 'Active')
+            ->where('expire_date', '>=', now())
             ->exists();
     }
 
@@ -56,5 +65,24 @@ class SubscriptionRepository
         return Subscription::with(['trainee.user','trainingPlan'])
             ->where('id', $SubscriptionId)
             ->first();
+    }
+
+    public function getActiveSubscriptionForTrainee(Trainee $trainee): ?Subscription
+    {
+        return $trainee->subscriptions()
+            ->where('status', 'Active')
+            ->where('expire_date', '>=', now())
+            ->with([
+                'trainer.user:id,id,first_name,last_name,email',
+                'trainingPlan.trainingPlan'
+            ])
+            ->latest('expire_date')
+            ->first();
+    }
+
+    public function getSubscriptionForTraineeWithPlanAndExercise(int $subscriptionId): Subscription
+    {
+        return Subscription::with('trainingPlan.customizedExercises.exercise')
+            ->find($subscriptionId);
     }
 }

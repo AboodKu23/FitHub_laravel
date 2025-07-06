@@ -6,10 +6,12 @@ use App\Http\Controllers\Services\ExercisesController;
 use App\Http\Controllers\Services\PostController;
 use App\Http\Controllers\Trainee\RegisterTraineeController;
 use App\Http\Controllers\Trainee\TraineeSubscriptionController;
+use App\Http\Controllers\Trainee\TraineeSubscriptionRequestController;
 use App\Http\Controllers\Trainee\TrainersIntegrationController;
 use App\Http\Controllers\Trainer\CustomizedTrainingExerciseController;
 use App\Http\Controllers\Trainer\ManagePostController;
 use App\Http\Controllers\Trainer\RegisterTrainerController;
+use App\Http\Controllers\Trainer\SubscriptionController;
 use App\Http\Controllers\Trainer\SubscriptionPlanController;
 use App\Http\Controllers\Trainer\TraineeIntegrationController;
 use App\Http\Controllers\Trainer\TrainerSubscriptionController;
@@ -64,13 +66,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
         }); //Done
 
         Route::prefix('subscription_requests')->group(function () {
-            Route::post('/send/{id}', [TraineeSubscriptionController::class, 'sendSubscriptionRequest']); //Done
-            Route::get('/get-requests', [TraineeSubscriptionController::class, 'getTraineeSubscriptionRequests']); //Done
-            Route::get('/get-accepted-requests', [TraineeSubscriptionController::class, 'getTraineeAcceptedSubscriptionRequests']);
-            Route::get('/get-rejected-requests', [TraineeSubscriptionController::class, 'getTraineeRejectedSubscriptionRequests']);
-            Route::get('/get-cancelled-requests', [TraineeSubscriptionController::class, 'getTrainerCancelledSubscriptionRequests']);
-            Route::get('/get-active-requests', [TraineeSubscriptionController::class, 'getActiveSubscriptionRequests']);
-            Route::post('/cancel/{id}', [TraineeSubscriptionController::class, 'cancelSubscriptionRequest']); //Done
+            Route::post('/send/{id}', [TraineeSubscriptionRequestController::class, 'sendSubscriptionRequest']); //Done
+            Route::get('/get-requests', [TraineeSubscriptionRequestController::class, 'getTraineeSubscriptionRequests']); //Done
+            Route::get('/get-accepted-requests', [TraineeSubscriptionRequestController::class, 'getTraineeAcceptedSubscriptionRequests']);
+            Route::get('/get-rejected-requests', [TraineeSubscriptionRequestController::class, 'getTraineeRejectedSubscriptionRequests']);
+            Route::get('/get-cancelled-requests', [TraineeSubscriptionRequestController::class, 'getTrainerCancelledSubscriptionRequests']);
+            Route::get('/get-active-requests', [TraineeSubscriptionRequestController::class, 'getActiveSubscriptionRequests']);
+            Route::post('/cancel/{id}', [TraineeSubscriptionRequestController::class, 'cancelSubscriptionRequest']); //Done
+        });
+
+        Route::prefix('Subscription')->group(function () {
+           Route::get('get-active-subscriptions', [TraineeSubscriptionController::class, 'getTraineeSubscription']); //Done
+           Route::get('get-today-excersies', [TraineeSubscriptionController::class, 'getTodayTraineeExercises']); //Done
+           Route::get('get-custom-exercise/{id}', [TraineeSubscriptionController::class, 'getCustomizedExercise']); //Done
         });
     });
 });
@@ -86,17 +94,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         });
 
         Route::prefix('subscriptions')->group(function () {
-            Route::get('/get-active-subscriptions', [TrainerSubscriptionController::class, 'getActiveSubscriptions']);
-            Route::get('/get-subscriptions/{id}', [TrainerSubscriptionController::class, 'getSubscription']);
+            Route::get('/get-active-subscriptions', [SubscriptionController::class, 'getActiveSubscriptions']); //Done
+            Route::get('/get-subscriptions/{id}', [SubscriptionController::class, 'getSubscription']); //Done
             Route::get('/get-trainee/{id}', [TraineeIntegrationController::class, 'getTraineeInfo']);
-
-            Route::prefix('plan')->group(function () {
-               Route::post('/assign-plan/{id}', [SubscriptionPlanController::class, 'assignPlan']); //Done
-               Route::post('/unassign-plan/{id}', [SubscriptionPlanController::class, 'unassignPlan']); //Done
-               Route::get('/get-subscription-plan/{id}', [SubscriptionPlanController::class, 'getSubscriptionPlan']); //Done
-               Route::get('/get-subscription-plan-exercise/{id}', [SubscriptionPlanController::class, 'getSubscriptionPlanExercises']); //Done
-               Route::post('/customize-plan/{id}', [CustomizedTrainingExerciseController::class, 'customizeTrainingExercises']); //Done
-            }); //Done UnderB
         });
 
         Route::prefix('Plans')->group(function () {
@@ -112,6 +112,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 Route::get('/plan-exercises/{id}', [TrainingPlanExerciseController::class, 'getPlanExercises']); //Done
                 Route::get('/plan-exercise/{id}', [TrainingPlanExerciseController::class, 'getPlanExerciseById']); //Done
                 Route::get('/day-exercises/{id}',[TrainingPlanExerciseController::class,'getDayExercises'] ); //Done
+
+                Route::prefix('Customize')->group(function () {
+                    Route::post('/assign-plan/{id}', [SubscriptionPlanController::class, 'assignPlan']); //Done
+                    Route::post('/unassign-plan/{id}', [SubscriptionPlanController::class, 'unassignPlan']); //Done
+                    Route::get('/get-subscription-plan/{id}', [SubscriptionPlanController::class, 'getSubscriptionPlan']); //Done
+                    Route::get('/get-subscription-plan-exercise/{id}', [SubscriptionPlanController::class, 'getSubscriptionPlanExercises']); //Done
+                    Route::post('/customize-plan/{id}', [CustomizedTrainingExerciseController::class, 'customizeTrainingExercises']); //Done
+                });
             });
         }); //Done
 

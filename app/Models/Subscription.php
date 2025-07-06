@@ -27,12 +27,12 @@ class Subscription extends Model
         return $this->belongsTo(Trainee::class, 'trainee_id');
     }
 
-    public function trainer():BelongsTo
+    public function trainer(): BelongsTo
     {
-        return $this->belongsTo(Trainer::class, 'trainee_id');
+        return $this->belongsTo(Trainer::class, 'trainer_id');
     }
 
-    public function trainingPlans(): BelongsToMany
+    public function possibleTrainingPlans(): BelongsToMany
     {
         return $this->belongsToMany(TrainingPlan::class, 'subscription_training_plan');
     }
@@ -46,4 +46,10 @@ class Subscription extends Model
     {
         return $this->hasOne(SubscriptionTrainingPlan::class, 'subscription_id');
     }
+
+    public function subscription(): BelongsTo
+    {
+        return $this->belongsTo(Subscription::class);
+    }
+
 }

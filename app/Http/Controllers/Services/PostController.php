@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Services;
 
 use App\Http\Controllers\Controller;
-use App\Services\Trainer\PostsServices;
+use App\Services\Community\PostServices;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +12,8 @@ use Throwable;
 
 class PostController extends Controller
 {
-    protected PostsServices $postsServices;
-    public function __construct(PostsServices $postsServices)
+    protected PostServices $postsServices;
+    public function __construct(PostServices $postsServices)
     {
         $this->postsServices = $postsServices;
     }

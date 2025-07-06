@@ -13,25 +13,44 @@ class TraineeRepository
         return Trainee::create($data);
     }
 
-    public function getTraineeProfileIfSubscription(int $trainerId, int $traineeId) : Trainee
+    public function getTraineeProfileIfSubscription(int $trainerId, int $traineeId): ?Trainee
     {
         $now = Carbon::now();
 
-        return Subscription::with(['trainee.user', 'trainee.diseases'])
+        $subscription = Subscription::with(['trainee.user'])
             ->where('trainee_id', $traineeId)
-            ->where('trainee_id', $trainerId)
+            ->where('trainer_id', $trainerId)
             ->where(function ($query) use ($now) {
-                $query->where('end_date', '>=', $now)
-                    ->orWhere('end_date', '>=', $now->copy()->subDays(2));
+                $query->where('expire_date', '>=', $now)
+                    ->orWhere('expire_date', '>=', $now->copy()->subDays(2));
             })
-            ->latest('end_date')
+            ->latest('expire_date')
             ->first();
+
+        return $subscription?->trainee;
     }
 
-    public function getTraineeProfileIfNotSubscription(int $traineeId) : Trainee
+    public function getBasicTraineeInfoIfNoSubscription(int $traineeId) : null
     {
-        return Trainee::where('trainee_id', $traineeId)
-            ->with(['user:id,id,first_name,last_name,email,gender'])
+        $trainee = Trainee::with('user')
+            ->where('trainee_id', $traineeId)
             ->first();
+
+        if (!$trainee||!$trainee->user)
+            return null;
+
+        $user = $trainee->user;
+
+        return [
+            'firstName' => $user->firstName,
+            'lastName' => $user->lastName,
+            'email' => $user->hide_email ? null : $user->email,
+            'phone_number' => $user->hide_phone_number ? null : $user->phone_number,
+        ];
+    }
+
+    public function getTraineeById(int $traineeId) : Trainee
+    {
+        return Trainee::where('id', $traineeId)->first();
     }
 }

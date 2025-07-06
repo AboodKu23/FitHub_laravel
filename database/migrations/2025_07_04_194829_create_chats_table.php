@@ -6,19 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('trainer_id')->constrained('trainers')->onDelete('cascade');
+            $table->foreignId('trainee_id')->constrained('trainees')->onDelete('cascade');
             $table->foreignId('subscription_id')->constrained('subscriptions')->onDelete('cascade');
-            $table->text('message');
-            $table->boolean('is_read')->default(false);
+            $table->boolean('isActive')->default(true);
+
             $table->timestamps();
+
+            $table->timestamp('last_message_at')->nullable();
+
+            $table->text('encrypted_key')->nullable();
+
+            $table->softDeletes();
+
+            $table->index(['trainer_id', 'trainee_id']);
+            $table->index('isActive');
+            $table->index('last_message_at');
         });
     }
 

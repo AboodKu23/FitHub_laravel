@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,7 +30,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'verification_code',
         'email_verification_sent_at',
-        'code_expires_at'
+        'code_expires_at',
+        'hidde_email',
+        'hidde_phone_number',
     ];
 
     protected $hidden = [

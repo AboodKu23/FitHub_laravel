@@ -19,15 +19,11 @@ class Trainee extends Model
         'activity_level',
     ];
 
-    public function user() : BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'trainee_id');
+        return $this->belongsTo(User::class);
     }
 
-//    public function diseases()
-//    {
-//        return $this->hasMany(TraineeDisease::class);
-//    }
 
     public function subscriptions() : HasMany
     {

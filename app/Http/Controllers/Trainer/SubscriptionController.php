@@ -25,7 +25,7 @@ class SubscriptionController extends Controller
             $user = Auth::user();
             $trainer = $user->trainer()->first();
 
-            $subscriptions = $this->subscriptionService->getActiveSubscriptions($trainer);
+            $subscriptions = $this->subscriptionService->getActiveSubscriptions($trainer->id);
             if ($subscriptions->isEmpty()) {
                 return response()->json([
                     'success' => false,

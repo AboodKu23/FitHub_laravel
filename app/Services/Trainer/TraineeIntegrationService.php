@@ -18,12 +18,23 @@ class TraineeIntegrationService
         $this->subscriptionRepository = $subscriptionRepository;
     }
 
-    public function getTraineeInfo(int $trainerId, int $traineeId): Trainee
+    public function getTraineeInfo(int $trainerId, int $traineeId): array
     {
-        if (!$this->subscriptionRepository->ifHasActiveSubscription($traineeId,$trainerId)) {
-            return $this->traineeRepository->getTraineeProfileIfNotSubscription($traineeId);
+        if ($this->subscriptionRepository->ifHasActiveSubscription($traineeId,$trainerId)) {
+            $trainee = $this->traineeRepository->getTraineeProfileIfSubscription($trainerId, $traineeId);
+            return [
+                'success' => true,
+                'subscription' => true,
+                'trainee' => $trainee
+            ];
         }
-        else
-            return $this->traineeRepository->getTraineeProfileIfSubscription($trainerId, $traineeId);
+        else {
+            $userInfo = $this->traineeRepository->getBasicTraineeInfoIfNoSubscription($traineeId);
+            return [
+                'success' => true,
+                'subscription' => false,
+                'trainee' => $userInfo
+            ];
+        }
     }
 }
