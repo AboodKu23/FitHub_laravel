@@ -40,5 +40,10 @@ return [
         'host' => env('EXERCISEDB_API_HOST'),
     ],
 
+    'stripe' => [
+        'secret' => env('STRIPE_SECRET_KEY'),
+        'public' => env('STRIPE_PUBLIC_KEY'),
+    ]
+
 
 ];

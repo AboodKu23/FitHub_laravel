@@ -2,6 +2,7 @@
 
 namespace App\Services\Trainer;
 
+use App\Notifications\VerificationCodeNotification;
 use App\Repositories\CertificateRepository;
 use App\Repositories\TempCertificateRepository;
 use App\Repositories\TempUserRepository;
@@ -38,8 +39,6 @@ class TrainerRegisterService
                 'message' => 'Invalid token'
             ]);
         }
-        //DB::beginTransaction();
-       // try {
             $user = $this->userRepository->create([
                 'first_name' => $tempUser->first_name,
                 'last_name' => $tempUser->last_name,
@@ -73,18 +72,12 @@ class TrainerRegisterService
 
             $this->tempUserRepository->delete($tempUser);
             $this->tempCertificateService->deleteTempCertificate($tempCertificate);
+            $code = $this->userRepository->generateVerificationCode($user);
+            $user->notify(new VerificationCodeNotification($code));
 
-           // DB::commit();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Registration completed successfully'
             ]);
-//        }
-//        catch (Exception $e) {
-//            DB::rollBack();
-//            return response()->json([
-//                'message' => $e->getMessage(),
-//            ]);
-//        }
     }
 }

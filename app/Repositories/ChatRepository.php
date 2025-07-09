@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Chat;
 use App\Models\ChatMessage;
 use App\Models\Subscription;
+use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ChatRepository
@@ -14,14 +15,14 @@ class ChatRepository
         $subscription = Subscription::with(['trainer', 'trainee'])->find($subscriptionId);
 
         if (!$subscription) {
-            throw new \Exception('Subscription not found');
+            throw new Exception('Subscription not found');
         }
 
         return Chat::create([
             'trainer_id' => $subscription->trainer_id,
             'trainee_id' => $subscription->trainee_id,
             'subscription_id' => $subscriptionId,
-            'is_active' => true,
+            'isActive' => true,
             'encrypted_key' => $this->generateEncryptionKey(),
             'last_message_at' => now()
         ]);
@@ -35,7 +36,7 @@ class ChatRepository
     public function findChatById(int $chatId)
     {
         return Chat::with(['trainer', 'trainee', 'subscription'])
-            ->where('is_active', true)
+            ->where('isActive', true)
             ->find($chatId);
     }
 
@@ -48,7 +49,7 @@ class ChatRepository
     public function getChatBySubscriptionId(int $subscriptionId): ?Chat
     {
         return Chat::where('subscription_id', $subscriptionId)
-            ->where('is_active', true)
+            ->where('isActive', true)
             ->with(['subscription.trainer', 'subscription.trainee'])
             ->first();
     }
@@ -78,7 +79,7 @@ class ChatRepository
         return $message->load('sender');
     }
 
-    public function markMessageAsRead(int $chatId, int $userId): ChatMessage
+    public function markMessageAsRead(int $chatId, int $userId): bool
     {
         return ChatMessage::where('chat_id', $chatId)
             ->where('sender_id', '!=' ,$userId)

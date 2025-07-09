@@ -52,9 +52,9 @@ class Product extends Model
         return 0;
     }
 
-    public function getPriceAttribute(): float
+    public function getPriceAttribute()
     {
-        return $this->discount ?? $this->price;
+        return $this->discount ?: $this->attributes['price'];
     }
 
     public function isApproved(): bool

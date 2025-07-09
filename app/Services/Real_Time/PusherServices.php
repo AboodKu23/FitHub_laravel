@@ -38,8 +38,8 @@ class PusherServices
                 'sender' => [
                     'id' => $message->sender->id,
                     'first_name' => $message->sender->first_name,
-                    'profile_image' => $message->sender()->profile_image
-                    ],
+                    'profile_image' => $message->sender->profile_image
+                ],
                 'message' => $message->message,
                 'created_at' => $message->created_at->toISOString(),
                 'is_read' => false

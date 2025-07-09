@@ -2,8 +2,11 @@
 use App\Http\Controllers\Auth\AuthenticatedController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\RegisterStepOneController;
+use App\Http\Controllers\Seller\ProductManageController;
+use App\Http\Controllers\Seller\RegisterSellerController;
 use App\Http\Controllers\Services\ExercisesController;
 use App\Http\Controllers\Services\PostController;
+use App\Http\Controllers\Services\SubscriptionChatController;
 use App\Http\Controllers\Trainee\RegisterTraineeController;
 use App\Http\Controllers\Trainee\TraineeSubscriptionController;
 use App\Http\Controllers\Trainee\TraineeSubscriptionRequestController;
@@ -27,8 +30,9 @@ Route::get('/user', function (Request $request) {
 Route::prefix('Auth')->group(function () {
     Route::post('/register',[RegisterStepOneController::class,'firstStepRegister']); //Done
     Route::post('/trainee/register', [RegisterTraineeController::class,'register']); //Done
-    Route::post('/trainer/register', [RegisterTrainerController::class,'register']);
+    Route::post('/trainer/register', [RegisterTrainerController::class,'register']); //Done
     Route::post('/trainer/certificate', [RegisterTrainerController::class,'addCertificate']); //Done
+    Route::post('/seller/register', [RegisterSellerController::class,'register']);
     Route::post('/login', [AuthenticatedController::class, 'login']); //Done
 
     Route::prefix('Email')->group(function () {
@@ -53,6 +57,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
            Route::post('/{id}/unDislike-post',[PostController::class,'unDislikePost']); //Done
            Route::get('/get-posts', [PostController::class,'getAllPosts']); //Done
        }); //Done
+
+       Route::prefix('Communications')->group(function () {
+           Route::post('send-message/{id}', [SubscriptionChatController::class, 'sendMessage']); //Done
+           Route::post('{id}/mark-as-read', [SubscriptionChatController::class, 'markAsRead']);
+           Route::get('get-all-chats', [SubscriptionChatController::class, 'getUserChats']);
+           Route::get('get-subscription-chat/{id}', [SubscriptionChatController::class, 'getSubscriptionChat']);
+           Route::get('get-chat/{id}', [SubscriptionChatController::class, 'getChat']); //Done
+       });
 
 
    }) ;
@@ -129,5 +141,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::post('/{id}/update-post', [ManagePostController::class, 'UpdateTrainerPost']); //Done
             Route::get('/get-trainer-posts', [ManagePostController::class, 'getTrainerPosts']); //Done
         }); //Done
+    });
+});
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::prefix('Seller')->group(function () {
+        Route::post('/create-product',[ProductManageController::class, 'createProduct']); //Done
+        Route::post('/{id}/delete-product',[ProductManageController::class, 'deleteProduct']); //Done
+        Route::post('/{id}/update-product',[ProductManageController::class, 'updateProduct']); //Done
+        Route::get('/get-products',[ProductManageController::class, 'getSellerProductsWithFilters']); //Done
+        Route::get('/{id}/product', [ProductManageController::class, 'getProductDetails']); //Done
     });
 });
